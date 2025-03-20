@@ -1,0 +1,190 @@
+﻿
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void setup()
+{
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+}
+
+void loop()
+{
+  // to display ZERO
+  digitalWrite(2, LOW);
+  digitalWrite(3, HIGH);
+  digitalWrite(4, HIGH);
+  digitalWrite(5, HIGH);
+  digitalWrite(6, HIGH);
+  digitalWrite(7, HIGH);
+  digitalWrite(8, HIGH);
+  digitalWrite(9, LOW);
+  delay(1000); // Wait for 1000 millisecond(s)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#define LED_PIN 2
+#define water_sensor 7
+#define SIGNAL_PIN A5
+#define THRESHOLD 300
+
+int value = 0;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(water_sensor, INPUT);
+  pinMode(SIGNAL_PIN, INPUT);
+  digitalWrite(LED_PIN, LOW);
+}
+
+void loop() {
+  value = analogRead(SIGNAL_PIN);
+  Serial.print("The water level is: ");
+  Serial.println(value);
+
+  if (value > THRESHOLD) {
+    Serial.println("Water is detected");
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  delay(1000);
+}
+
+
+
+
+SDA pin is connected to digital pin 10 of Arduino Uno
+SCK pin is connected to digital pin 13 of Arduino Uno
+MOSI pin is connected to digital pin 11 of Arduino Uno
+MISO pin is connected to digital pin 12 of Arduino Uno
+IRQ Not Connected
+GND is connected to GND of Arduino Uno
+RST is connected to digital pin 9 of Arduino Uno
+3.3 V is connected to 3.3 Volts of Arduino Uno
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define RST_PIN 9
+#define SS_PIN 10
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial);
+  SPI.begin();
+  mfrc522.PCD_Init();
+  delay(4);
+  mfrc522.PCD_DumpVersionToSerial();
+  Serial.println(F("Scan PICC to see UID, SAK, type, and data blocks"));
+}
+
+void loop() {
+  if (!mfrc522.PICC_IsNewCardPresent()) {
+    return;
+  }
+  
+  if (!mfrc522.PICC_ReadCardSerial()) {
+    return;
+  }
+
+  mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+}
+
+____________________
+
+const int trigPin = 7;
+const int echoPin = 8;
+void setup() {
+Serial.begin(9600);
+pinMode(trigPin,OUTPUT);
+pinMode(echoPin,INPUT);
+}
+void loop() {
+long duration, inches, cm;
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+duration = pulseIn(echoPin, HIGH);
+inches = microsecondsToInches(duration);
+cm = microsecondsToCentimeters(duration);
+// The data has to be fed in this format so that it will be stored in MySQL
+Serial.print("{\"inches\":");
+Serial.print(inches);
+// The data has to be fed in this format so that it will be stored in MySQL
+Serial.print(",\"cm\":");.
+Serial.print(cm);
+Serial.println("}")
+delay(1000);
+}
+long microsecondsToInches(long microseconds) {
+return microseconds / 74 / 2;
+}
+long microsecondsToCentimeters(long microseconds) {
+return microseconds / 29 / 2;
+}
+____________
+
+var value = JSON.parse(JSON.stringify(msg.payload)); //converting string to
+// JSON object
+value = msg;
+var sensor1 = msg.payload.inches; //adding value to the payload
+var sensor2 = msg.payload.cm; //adding value to the payload
+msg.payload = [sensor1, sensor2]; //adding value to the payload
+msg.topic = 'INSERT INTO distance(inches,cm) values (?,?);'; //query to insert
+return msg;
